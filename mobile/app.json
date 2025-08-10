@@ -22,7 +22,7 @@
     },
     "extra": {
       "API_BASE_URL": "https://dressmaster-api.onrender.com",
-      "POSTHOG_API_KEY": "PHC_ВАШ_КЛЮЧ",
+      "POSTHOG_API_KEY": "phc_6PwMQbnmHk2MbZoynlZKO3TCXFxnIPnizMGerbXxnKd",
       "POSTHOG_HOST": "https://app.posthog.com"
     }
   }
