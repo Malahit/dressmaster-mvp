@@ -1,13 +1,11 @@
 # Dressmaster API
 
-## Команды
-- pnpm dev — старт в dev
-- pnpm prisma:migrate — миграции
-- pnpm prisma:generate — генерация клиента
-- pnpm prisma:seed — сиды (опц)
+Fastify-сервер, который управляет гардеробом, образами и календарём пользователя.
 
-## ENV
-Смотрите .env.example и заполните:
-- DATABASE_URL
-- JWT_SECRET (TODO: задать)
-- POSTHOG_* (опционально)
+## Запуск
+
+```bash
+pnpm install
+pnpm -C api prisma:migrate
+pnpm -C api prisma:generate
+pnpm -C api dev
