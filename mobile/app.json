@@ -11,11 +11,18 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "ios": { "supportsTablet": false },
-    "android": { "adaptiveIcon": { "foregroundImage": "./assets/adaptive-icon.png", "backgroundColor": "#ffffff" } },
+    "ios": {
+      "supportsTablet": false
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      }
+    },
     "extra": {
-      "API_BASE_URL": "http://localhost:3000",
-      "POSTHOG_API_KEY": "PHC_XXXX",
+      "API_BASE_URL": "https://dressmaster-api.onrender.com",
+      "POSTHOG_API_KEY": "PHC_ВАШ_КЛЮЧ",
       "POSTHOG_HOST": "https://app.posthog.com"
     }
   }
