@@ -1,0 +1,16 @@
+{
+  "name": "dressmaster-mvp",
+  "private": true,
+  "packageManager": "pnpm@9.0.0",
+  "scripts": {
+    "dev:api": "pnpm -C api dev",
+    "dev:mobile": "pnpm -C mobile start",
+    "build:api": "pnpm -C api build",
+    "lint": "pnpm -C api lint && pnpm -C mobile lint",
+    "test": "pnpm -C api test"
+  },
+  "workspaces": [
+    "api",
+    "mobile"
+  ]
+}
