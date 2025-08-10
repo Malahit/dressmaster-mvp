@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Category {
+  top
+  bottom
+  shoes
+  accessory
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  items        Item[]
+  outfits      Outfit[]
+  calendar     CalendarEntry[]
+  feedbacks    Feedback[]
+}
+
+model Item {
+  id         String   @id @default(cuid())
+  user       User     @relation(fields: [userId], references: [id])
+  userId     String
+  category   Category
+  color      String?
+  season     String?  // 'S'|'F'|'W'|'SS'
+  formality  Int?     // 1..5
+  imageUrl   String?
+  createdAt  DateTime @default(now())
+}
+
+model Outfit {
+  id               String   @id @default(cuid())
+  user             User     @relation(fields: [userId], references: [id])
+  userId           String
+  topId            String
+  bottomId         String
+  shoesId          String
+  accessoryIds     String[] @default([])
+  occasion         String?
+  temperatureRange String?
+  score            Int?
+  createdAt        DateTime @default(now())
+}
+
+model CalendarEntry {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  outfit    Outfit   @relation(fields: [outfitId], references: [id])
+  outfitId  String
+  date      DateTime
+}
+
+model Feedback {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  outfit    Outfit   @relation(fields: [outfitId], references: [id])
+  outfitId  String
+  rating    String   // 'like' | 'dislike'
+  reason    String?
+  createdAt DateTime @default(now())
+}
