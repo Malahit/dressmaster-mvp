@@ -8,7 +8,13 @@ const credsSchema = z.object({
 });
 
 export default async function authRoutes(app: FastifyInstance) {
-  app.post('/auth/register', async (req, reply) => {
+  // Rate limiting configuration for auth routes
+  const rateLimitConfig = {
+    max: 5, // max 5 requests
+    timeWindow: '15 minutes' // per 15 minutes
+  };
+
+  app.post('/auth/register', { config: { rateLimit: rateLimitConfig } }, async (req, reply) => {
     const parsed = credsSchema.safeParse(req.body);
     if (!parsed.success) return reply.code(400).send({ error: 'invalid_body' });
     const { email, password } = parsed.data;
@@ -22,7 +28,7 @@ export default async function authRoutes(app: FastifyInstance) {
     return { token };
   });
 
-  app.post('/auth/login', async (req, reply) => {
+  app.post('/auth/login', { config: { rateLimit: rateLimitConfig } }, async (req, reply) => {
     const parsed = credsSchema.safeParse(req.body);
     if (!parsed.success) return reply.code(400).send({ error: 'invalid_body' });
     const { email, password } = parsed.data;

@@ -27,7 +27,7 @@ model User {
 
 model Item {
   id         String   @id @default(cuid())
-  user       User     @relation(fields: [userId], references: [id])
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId     String
   category   Category
   color      String?
@@ -39,7 +39,7 @@ model Item {
 
 model Outfit {
   id               String   @id @default(cuid())
-  user             User     @relation(fields: [userId], references: [id])
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId           String
   topId            String
   bottomId         String
@@ -49,22 +49,24 @@ model Outfit {
   temperatureRange String?
   score            Int?
   createdAt        DateTime @default(now())
+  CalendarEntry    CalendarEntry[]
+  Feedback         Feedback[]
 }
 
 model CalendarEntry {
   id        String   @id @default(cuid())
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String
-  outfit    Outfit   @relation(fields: [outfitId], references: [id])
+  outfit    Outfit   @relation(fields: [outfitId], references: [id], onDelete: Cascade)
   outfitId  String
   date      DateTime
 }
 
 model Feedback {
   id        String   @id @default(cuid())
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String
-  outfit    Outfit   @relation(fields: [outfitId], references: [id])
+  outfit    Outfit   @relation(fields: [outfitId], references: [id], onDelete: Cascade)
   outfitId  String
   rating    String   // 'like' | 'dislike'
   reason    String?

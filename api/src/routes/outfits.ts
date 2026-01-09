@@ -30,6 +30,22 @@ export default async function outfitsRoutes(app: FastifyInstance) {
     const parsed = schema.safeParse(req.body);
     if (!parsed.success) return reply.code(400).send({ error: 'invalid_body' });
 
+    // Verify that all items belong to the user
+    const itemIds = [
+      parsed.data.items.topId,
+      parsed.data.items.bottomId,
+      parsed.data.items.shoesId,
+      ...(parsed.data.items.accessoryIds || [])
+    ].filter(Boolean); // Filter out any null/undefined values
+    
+    const items = await app.prisma.item.findMany({
+      where: { id: { in: itemIds }, userId: req.user.id }
+    });
+    
+    if (items.length !== itemIds.length) {
+      return reply.code(403).send({ error: 'forbidden_items' });
+    }
+
     const outfit = await app.prisma.outfit.create({
       data: {
         userId: req.user.id,

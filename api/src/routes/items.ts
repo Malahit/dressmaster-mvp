@@ -29,6 +29,12 @@ export default async function itemsRoutes(app: FastifyInstance) {
     const { id } = req.params as { id: string };
     const parsed = itemSchema.partial().safeParse(req.body);
     if (!parsed.success) return reply.code(400).send({ error: 'invalid_body' });
+    
+    // Verify ownership before updating
+    const item = await app.prisma.item.findUnique({ where: { id } });
+    if (!item) return reply.code(404).send({ error: 'item_not_found' });
+    if (item.userId !== req.user.id) return reply.code(403).send({ error: 'forbidden' });
+    
     const updated = await app.prisma.item.update({
       where: { id },
       data: parsed.data
@@ -38,6 +44,12 @@ export default async function itemsRoutes(app: FastifyInstance) {
 
   app.delete('/items/:id', { preHandler: [app.authenticate] }, async (req: any, reply) => {
     const { id } = req.params as { id: string };
+    
+    // Verify ownership before deleting
+    const item = await app.prisma.item.findUnique({ where: { id } });
+    if (!item) return reply.code(404).send({ error: 'item_not_found' });
+    if (item.userId !== req.user.id) return reply.code(403).send({ error: 'forbidden' });
+    
     await app.prisma.item.delete({ where: { id } });
     reply.code(204).send();
   });
