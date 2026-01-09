@@ -115,8 +115,8 @@ The DressMaster API includes temperature-based outfit recommendations. Currently
 - The `/outfits/generate` endpoint accepts an optional `temp` parameter (number)
 - Temperature is used to filter appropriate clothing items based on season/formality
 - Temperature filtering logic:
-  - `temp < 10°C`: Filters for warmer items (formality ≥ 3)
-  - `temp > 23°C`: Filters for cooler items (formality ≤ 3)
+  - `temp < 10°C`: Filters for items suitable for cold weather (formality ≥ 3, typically heavier/warmer clothing)
+  - `temp > 23°C`: Filters for items suitable for warm weather (formality ≤ 3, typically lighter/cooler clothing)
 
 **Example API Call:**
 ```bash
@@ -301,7 +301,7 @@ cd mobile
 pnpm test
 ```
 
-Note: Mobile testing infrastructure is minimal in MVP. Focus on manual testing with Expo Go.
+Note: Mobile testing infrastructure is not yet implemented in MVP. The test script is a placeholder. Focus on manual testing with Expo Go or physical devices.
 
 ### Pull Request Process
 
