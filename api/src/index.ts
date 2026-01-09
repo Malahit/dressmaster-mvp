@@ -7,15 +7,12 @@ import authRoutes from './routes/auth.js';
 import itemsRoutes from './routes/items.js';
 import outfitsRoutes from './routes/outfits.js';
 import calendarRoutes from './routes/calendar.js';
-import 'dotenv/config';
-
-const PORT = parseInt(process.env.PORT || '3000', 10);
-const JWT_SECRET = process.env.JWT_SECRET || 'PLEASE_SET_JWT_SECRET';
+import { env } from './env.js';
 
 const app = Fastify({ logger: true });
 
 await app.register(cors, { origin: true });
-await app.register(jwt, { secret: JWT_SECRET });
+await app.register(jwt, { secret: env.JWT_SECRET });
 await app.register(prismaPlugin);
 
 app.decorate('authenticate', async (request: any, reply: any) => {
@@ -32,6 +29,6 @@ app.register(itemsRoutes);
 app.register(outfitsRoutes);
 app.register(calendarRoutes);
 
-app.listen({ port: PORT, host: '0.0.0.0' }).then(() => {
-  app.log.info(`API listening on :${PORT}`);
+app.listen({ port: env.PORT, host: '0.0.0.0' }).then(() => {
+  app.log.info(`API listening on :${env.PORT}`);
 });

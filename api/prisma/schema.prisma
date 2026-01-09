@@ -35,20 +35,26 @@ model Item {
   formality  Int?     // 1..5
   imageUrl   String?
   createdAt  DateTime @default(now())
+
+  @@index([userId])
 }
 
 model Outfit {
-  id               String   @id @default(cuid())
-  user             User     @relation(fields: [userId], references: [id])
+  id               String          @id @default(cuid())
+  user             User            @relation(fields: [userId], references: [id])
   userId           String
   topId            String
   bottomId         String
   shoesId          String
-  accessoryIds     String[] @default([])
+  accessoryIds     String[]        @default([])
   occasion         String?
   temperatureRange String?
   score            Int?
-  createdAt        DateTime @default(now())
+  createdAt        DateTime        @default(now())
+  calendarEntries  CalendarEntry[]
+  feedbacks        Feedback[]
+
+  @@index([userId])
 }
 
 model CalendarEntry {
@@ -58,6 +64,9 @@ model CalendarEntry {
   outfit    Outfit   @relation(fields: [outfitId], references: [id])
   outfitId  String
   date      DateTime
+
+  @@index([userId])
+  @@index([date])
 }
 
 model Feedback {
