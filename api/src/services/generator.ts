@@ -46,7 +46,7 @@ function scoreFormality(t: Item, b: Item, s: Item, occasion: Occasion) {
   return Math.max(0, 10 - delta * 3);
 }
 
-function scoreColors(t: Item, b: Item, s: Item) {
+function scoreColors(t: Item, b: Item, _s: Item) {
   // Для офиса: темные низы + нейтральные верха (синий/серый/белый)
   const darkBottoms = ['navy', 'black', 'gray', 'charcoal'];
   const safeTops = ['white', 'lightgray', 'blue', 'lightblue'];

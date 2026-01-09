@@ -4,7 +4,7 @@ import bcrypt from 'bcryptjs';
 
 const credsSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(6)
+  password: z.string().min(8, 'Password must be at least 8 characters')
 });
 
 export default async function authRoutes(app: FastifyInstance) {

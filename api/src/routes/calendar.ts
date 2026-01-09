@@ -40,7 +40,16 @@ export default async function calendarRoutes(app: FastifyInstance) {
 
   app.delete('/calendar/:id', { preHandler: [app.authenticate] }, async (req: any, reply) => {
     const { id } = req.params as { id: string };
-    await app.prisma.calendarEntry.delete({ where: { id } });
+    
+    // Security: Verify user owns the calendar entry before deleting
+    const deleted = await app.prisma.calendarEntry.deleteMany({ 
+      where: { id, userId: req.user.id } 
+    });
+    
+    if (deleted.count === 0) {
+      return reply.code(404).send({ error: 'not_found' });
+    }
+    
     reply.code(204).send();
   });
 }
