@@ -36,7 +36,7 @@ export default async function outfitsRoutes(app: FastifyInstance) {
       parsed.data.items.bottomId,
       parsed.data.items.shoesId,
       ...(parsed.data.items.accessoryIds || [])
-    ];
+    ].filter(Boolean); // Filter out any null/undefined values
     
     const items = await app.prisma.item.findMany({
       where: { id: { in: itemIds }, userId: req.user.id }
