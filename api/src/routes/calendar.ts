@@ -26,6 +26,14 @@ export default async function calendarRoutes(app: FastifyInstance) {
     const parsed = schema.safeParse(req.body);
     if (!parsed.success) return reply.code(400).send({ error: 'invalid_body' });
 
+    // Verify the outfit belongs to the user
+    const outfit = await app.prisma.outfit.findUnique({
+      where: { id: parsed.data.outfitId }
+    });
+    
+    if (!outfit) return reply.code(404).send({ error: 'outfit_not_found' });
+    if (outfit.userId !== req.user.id) return reply.code(403).send({ error: 'forbidden' });
+
     const entry = await app.prisma.calendarEntry.create({
       data: {
         userId: req.user.id,
@@ -40,6 +48,12 @@ export default async function calendarRoutes(app: FastifyInstance) {
 
   app.delete('/calendar/:id', { preHandler: [app.authenticate] }, async (req: any, reply) => {
     const { id } = req.params as { id: string };
+    
+    // Verify ownership before deleting
+    const entry = await app.prisma.calendarEntry.findUnique({ where: { id } });
+    if (!entry) return reply.code(404).send({ error: 'entry_not_found' });
+    if (entry.userId !== req.user.id) return reply.code(403).send({ error: 'forbidden' });
+    
     await app.prisma.calendarEntry.delete({ where: { id } });
     reply.code(204).send();
   });
