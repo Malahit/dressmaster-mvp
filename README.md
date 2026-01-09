@@ -8,27 +8,27 @@
 - /docs — спеки и дорожная карта
 
 ## Быстрый старт
-1) Установите Node.js 20 (см. `.nvmrc`, можно выполнить `nvm use`) и включите pnpm через `corepack enable`.
-2) Поднимите Postgres.
-```bash
-docker compose -f infra/docker-compose.yml up -d
-```
-3) Создайте файлы окружения (сразу пропишите корректный `API_BASE_URL` для мобильного клиента).
-```bash
-cp api/.env.example api/.env
-cp mobile/.env.example mobile/.env
-```
-4) Установите зависимости и соберите Prisma Client.
-```bash
-pnpm install
-pnpm -C api prisma:generate
-pnpm -C api prisma:migrate   # локальные миграции
-```
-5) Запустите сервисы.
-```bash
-pnpm dev:api     # API на http://localhost:3000
-pnpm dev:mobile  # Expo/Metro Bundler для мобильного клиента
-```
+1. Установите Node.js 20 (см. `.nvmrc`, можно выполнить `nvm use`) и включите pnpm через `corepack enable`.
+2. Поднимите Postgres.
+   ```bash
+   docker compose -f infra/docker-compose.yml up -d
+   ```
+3. Создайте файлы окружения (сразу пропишите корректный `API_BASE_URL` для мобильного клиента).
+   ```bash
+   cp api/.env.example api/.env
+   cp mobile/.env.example mobile/.env
+   ```
+4. Установите зависимости и соберите Prisma Client.
+   ```bash
+   pnpm install
+   pnpm -C api prisma:generate
+   pnpm -C api prisma:migrate   # локальные миграции
+   ```
+5. Запустите сервисы.
+   ```bash
+   pnpm dev:api     # API на http://localhost:3000
+   pnpm dev:mobile  # Expo/Metro Bundler для мобильного клиента
+   ```
 
 ## Проверки качества
 - `pnpm test` — API тесты (Vitest)
