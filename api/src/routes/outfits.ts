@@ -1,9 +1,11 @@
-import { FastifyInstance } from 'fastify';
+import { FastifyInstance, FastifyRequest } from 'fastify';
 import { z } from 'zod';
 import { generateOutfits } from '../services/generator.js';
 
+type AuthRequest = FastifyRequest & { user: { id: string } };
+
 export default async function outfitsRoutes(app: FastifyInstance) {
-  app.post('/outfits/generate', { preHandler: [app.authenticate] }, async (req: any, reply) => {
+  app.post('/outfits/generate', { preHandler: [app.authenticate] }, async (req: AuthRequest, reply) => {
     const schema = z.object({
       occasion: z.enum(['work', 'date', 'sport']),
       temp: z.number().optional()
@@ -17,7 +19,7 @@ export default async function outfitsRoutes(app: FastifyInstance) {
     return gen;
   });
 
-  app.post('/outfits', { preHandler: [app.authenticate] }, async (req: any, reply) => {
+  app.post('/outfits', { preHandler: [app.authenticate] }, async (req: AuthRequest, reply) => {
     const schema = z.object({
       items: z.object({
         topId: z.string(),
@@ -44,7 +46,7 @@ export default async function outfitsRoutes(app: FastifyInstance) {
     return outfit;
   });
 
-  app.get('/outfits', { preHandler: [app.authenticate] }, async (req: any) => {
+  app.get('/outfits', { preHandler: [app.authenticate] }, async (req: AuthRequest) => {
     return app.prisma.outfit.findMany({ where: { userId: req.user.id } });
   });
 }

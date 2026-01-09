@@ -1,13 +1,19 @@
-import { FastifyInstance } from 'fastify';
+import { FastifyInstance, FastifyRequest } from 'fastify';
 import { z } from 'zod';
 
+type CalendarQuery = { month?: string };
+type AuthRequest = FastifyRequest<{ Querystring: CalendarQuery }> & {
+  user: { id: string };
+  query: CalendarQuery;
+};
+
 export default async function calendarRoutes(app: FastifyInstance) {
-  app.get('/calendar', { preHandler: [app.authenticate] }, async (req: any, reply) => {
+  app.get('/calendar', { preHandler: [app.authenticate] }, async (req: AuthRequest, reply) => {
     const schema = z.object({ month: z.string().regex(/^\d{4}-\d{2}$/) }).partial();
     const parsed = schema.safeParse(req.query);
     if (!parsed.success) return reply.code(400).send({ error: 'invalid_query' });
 
-    const where: any = { userId: req.user.id };
+    const where: { userId: string; date?: { gte: Date; lt: Date } } = { userId: req.user.id };
     if (parsed.data.month) {
       const [y, m] = parsed.data.month.split('-').map((n) => parseInt(n, 10));
       const start = new Date(Date.UTC(y, m - 1, 1));
@@ -18,7 +24,7 @@ export default async function calendarRoutes(app: FastifyInstance) {
     return app.prisma.calendarEntry.findMany({ where });
   });
 
-  app.post('/calendar', { preHandler: [app.authenticate] }, async (req: any, reply) => {
+  app.post('/calendar', { preHandler: [app.authenticate] }, async (req: AuthRequest, reply) => {
     const schema = z.object({
       date: z.string(), // ISO date
       outfitId: z.string()
@@ -38,7 +44,7 @@ export default async function calendarRoutes(app: FastifyInstance) {
     return entry;
   });
 
-  app.delete('/calendar/:id', { preHandler: [app.authenticate] }, async (req: any, reply) => {
+  app.delete('/calendar/:id', { preHandler: [app.authenticate] }, async (req: AuthRequest, reply) => {
     const { id } = req.params as { id: string };
     await app.prisma.calendarEntry.delete({ where: { id } });
     reply.code(204).send();

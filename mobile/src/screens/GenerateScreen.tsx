@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, Button, Alert } from 'react-native';
-import { generateOutfits, saveOutfit, addCalendarEntry } from '../services/api';
+import { addCalendarEntry, generateOutfits, GeneratedOutfit, saveOutfit } from '../services/api';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { RootStackParamList } from '../navigation';
 
-export default function GenerateScreen({ navigation }: any) {
-  const [outfits, setOutfits] = useState<any[]>([]);
+export default function GenerateScreen() {
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const [outfits, setOutfits] = useState<GeneratedOutfit[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -12,8 +15,9 @@ export default function GenerateScreen({ navigation }: any) {
       try {
         const results = await generateOutfits('work', 15); // офис + 15°C
         setOutfits(results);
-      } catch (e: any) {
-        Alert.alert('Ошибка', e?.message || 'Не удалось сгенерировать');
+      } catch (e) {
+        const message = e instanceof Error ? e.message : 'Не удалось сгенерировать';
+        Alert.alert('Ошибка', message);
       } finally {
         setLoading(false);
       }
@@ -21,7 +25,7 @@ export default function GenerateScreen({ navigation }: any) {
     load();
   }, []);
 
-  const saveAndCalendar = async (outfit: any) => {
+  const saveAndCalendar = async (outfit: GeneratedOutfit) => {
     try {
       const saved = await saveOutfit({
         items: outfit.items,
@@ -36,8 +40,9 @@ export default function GenerateScreen({ navigation }: any) {
       await addCalendarEntry(dateStr, saved.id);
       Alert.alert('Успех', 'Образ сохранён в календарь на завтра!');
       navigation.navigate('Calendar');
-    } catch (e: any) {
-      Alert.alert('Ошибка', 'Не удалось сохранить');
+    } catch (e) {
+      const message = e instanceof Error ? e.message : 'Не удалось сохранить';
+      Alert.alert('Ошибка', message);
     }
   };
 

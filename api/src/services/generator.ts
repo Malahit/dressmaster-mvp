@@ -55,5 +55,7 @@ function scoreColors(t: Item, b: Item, s: Item) {
   if (darkBottoms.includes(b.color?.toLowerCase() || '')) score += 3;
   if (safeTops.includes(t.color?.toLowerCase() || '')) score += 2;
   if (t.color === b.color) score -= 5; // один цвет = плохо
+  // Небольшой бонус, если обувь совпадает по тону с низом
+  if (b.color && s.color && b.color.toLowerCase() === s.color.toLowerCase()) score += 1;
   return Math.max(0, score);
 }

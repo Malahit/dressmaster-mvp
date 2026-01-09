@@ -5,8 +5,11 @@ import Input from '../components/Input';
 import { register, login } from '../services/api';
 import * as SecureStore from 'expo-secure-store';
 import { useAuth } from '../store/useAuth';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { RootStackParamList } from '../navigation';
 
-export default function OnboardingScreen({ navigation }: any) {
+export default function OnboardingScreen() {
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [email, setEmail] = useState('test@example.com');
   const [password, setPassword] = useState('password123');
   const setToken = useAuth((s) => s.setToken);
@@ -22,8 +25,9 @@ export default function OnboardingScreen({ navigation }: any) {
       const token = await SecureStore.getItemAsync('token');
       setToken(token || undefined);
       navigation.replace('Items');
-    } catch (e: any) {
-      Alert.alert('Ошибка', e?.message || 'Не удалось авторизоваться');
+    } catch (e) {
+      const message = e instanceof Error ? e.message : 'Не удалось авторизоваться';
+      Alert.alert('Ошибка', message);
     }
   };
 
