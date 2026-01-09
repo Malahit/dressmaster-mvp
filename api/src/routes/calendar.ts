@@ -2,10 +2,7 @@ import { FastifyInstance, FastifyRequest } from 'fastify';
 import { z } from 'zod';
 
 type CalendarQuery = { month?: string };
-type AuthRequest = FastifyRequest<{ Querystring: CalendarQuery }> & {
-  user: { id: string };
-  query: CalendarQuery;
-};
+type AuthRequest = FastifyRequest<{ Querystring: CalendarQuery }> & { user: { id: string } };
 
 export default async function calendarRoutes(app: FastifyInstance) {
   app.get('/calendar', { preHandler: [app.authenticate] }, async (req: AuthRequest, reply) => {

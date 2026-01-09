@@ -12,7 +12,7 @@ export default fp(async (app: AppWithConfig) => {
   app.decorate('authenticate', async (request: AuthRequest, reply: FastifyReply) => {
     try {
       await request.jwtVerify();
-    } catch {
+    } catch (_err) {
       reply.code(401).send({ error: 'unauthorized' });
     }
   });
