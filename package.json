@@ -3,6 +3,7 @@
   "private": true,
   "packageManager": "pnpm@9.0.0",
   "scripts": {
+    "dev": "pnpm -r --parallel dev --filter dressmaster-api --filter dressmaster-mobile",
     "dev:api": "pnpm -C api dev",
     "dev:mobile": "pnpm -C mobile start",
     "build:api": "pnpm -C api build",

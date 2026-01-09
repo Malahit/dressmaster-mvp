@@ -26,6 +26,7 @@
    ```
 5. Запустите сервисы.
    ```bash
+   pnpm dev         # совместный запуск API и мобильного клиента
    pnpm dev:api     # API на http://localhost:3000
    pnpm dev:mobile  # Expo/Metro Bundler для мобильного клиента
    ```

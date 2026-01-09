@@ -3,6 +3,7 @@
   "private": true,
   "main": "src/App.tsx",
   "scripts": {
+    "dev": "pnpm start",
     "start": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
