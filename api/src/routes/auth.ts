@@ -1,4 +1,4 @@
-import { FastifyInstance } from 'fastify';
+import { FastifyInstance, FastifyRequest } from 'fastify';
 import { z } from 'zod';
 import bcrypt from 'bcryptjs';
 
@@ -7,8 +7,10 @@ const credsSchema = z.object({
   password: z.string().min(6)
 });
 
+type AuthRequest = FastifyRequest & { user: { id: string; email: string } };
+
 export default async function authRoutes(app: FastifyInstance) {
-  app.post('/auth/register', async (req, reply) => {
+  app.post('/auth/register', async (req: FastifyRequest, reply) => {
     const parsed = credsSchema.safeParse(req.body);
     if (!parsed.success) return reply.code(400).send({ error: 'invalid_body' });
     const { email, password } = parsed.data;
@@ -22,7 +24,7 @@ export default async function authRoutes(app: FastifyInstance) {
     return { token };
   });
 
-  app.post('/auth/login', async (req, reply) => {
+  app.post('/auth/login', async (req: FastifyRequest, reply) => {
     const parsed = credsSchema.safeParse(req.body);
     if (!parsed.success) return reply.code(400).send({ error: 'invalid_body' });
     const { email, password } = parsed.data;
@@ -36,7 +38,7 @@ export default async function authRoutes(app: FastifyInstance) {
     return { token };
   });
 
-  app.get('/me', { preHandler: [app.authenticate] }, async (req: any) => {
+  app.get('/me', { preHandler: [app.authenticate] }, async (req: AuthRequest) => {
     return { id: req.user.id, email: req.user.email };
   });
 }

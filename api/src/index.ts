@@ -1,4 +1,4 @@
-import Fastify from 'fastify';
+import Fastify, { FastifyReply, FastifyRequest } from 'fastify';
 import cors from '@fastify/cors';
 import jwt from '@fastify/jwt';
 import prismaPlugin from './plugins/prisma.js';
@@ -12,13 +12,15 @@ import 'dotenv/config';
 const PORT = parseInt(process.env.PORT || '3000', 10);
 const JWT_SECRET = process.env.JWT_SECRET || 'PLEASE_SET_JWT_SECRET';
 
+type AuthenticatedRequest = FastifyRequest & { user: { id: string; email: string } };
+
 const app = Fastify({ logger: true });
 
 await app.register(cors, { origin: true });
 await app.register(jwt, { secret: JWT_SECRET });
 await app.register(prismaPlugin);
 
-app.decorate('authenticate', async (request: any, reply: any) => {
+app.decorate('authenticate', async (request: AuthenticatedRequest, reply: FastifyReply) => {
   try {
     await request.jwtVerify();
   } catch {

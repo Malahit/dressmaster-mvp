@@ -1,4 +1,4 @@
-import { FastifyInstance } from 'fastify';
+import { FastifyInstance, FastifyRequest } from 'fastify';
 import { z } from 'zod';
 
 const itemSchema = z.object({
@@ -9,13 +9,15 @@ const itemSchema = z.object({
   imageUrl: z.string().url().optional()
 });
 
+type AuthRequest = FastifyRequest & { user: { id: string } };
+
 export default async function itemsRoutes(app: FastifyInstance) {
-  app.get('/items', { preHandler: [app.authenticate] }, async (req: any) => {
+  app.get('/items', { preHandler: [app.authenticate] }, async (req: AuthRequest) => {
     const items = await app.prisma.item.findMany({ where: { userId: req.user.id } });
     return items;
   });
 
-  app.post('/items', { preHandler: [app.authenticate] }, async (req: any, reply) => {
+  app.post('/items', { preHandler: [app.authenticate] }, async (req: AuthRequest, reply) => {
     const parsed = itemSchema.safeParse(req.body);
     if (!parsed.success) return reply.code(400).send({ error: 'invalid_body' });
     const item = await app.prisma.item.create({
@@ -25,7 +27,7 @@ export default async function itemsRoutes(app: FastifyInstance) {
     return item;
   });
 
-  app.patch('/items/:id', { preHandler: [app.authenticate] }, async (req: any, reply) => {
+  app.patch('/items/:id', { preHandler: [app.authenticate] }, async (req: AuthRequest, reply) => {
     const { id } = req.params as { id: string };
     const parsed = itemSchema.partial().safeParse(req.body);
     if (!parsed.success) return reply.code(400).send({ error: 'invalid_body' });
@@ -36,7 +38,7 @@ export default async function itemsRoutes(app: FastifyInstance) {
     return updated;
   });
 
-  app.delete('/items/:id', { preHandler: [app.authenticate] }, async (req: any, reply) => {
+  app.delete('/items/:id', { preHandler: [app.authenticate] }, async (req: AuthRequest, reply) => {
     const { id } = req.params as { id: string };
     await app.prisma.item.delete({ where: { id } });
     reply.code(204).send();
