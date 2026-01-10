@@ -49,6 +49,8 @@ model Outfit {
   temperatureRange String?
   score            Int?
   createdAt        DateTime @default(now())
+  calendarEntries  CalendarEntry[]
+  feedbacks        Feedback[]
 }
 
 model CalendarEntry {
