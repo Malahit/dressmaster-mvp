@@ -28,8 +28,27 @@ export async function getItems() {
   return data;
 }
 
+export async function getItemsFiltered(filters?: { category?: string; color?: string; season?: string }) {
+  const { data } = await api.get('/items', { params: filters });
+  return data;
+}
+
 export async function addItem(payload: any) {
   const { data } = await api.post('/items', payload);
+  return data;
+}
+
+export async function updateItem(id: string, payload: any) {
+  const { data } = await api.patch(`/items/${id}`, payload);
+  return data;
+}
+
+export async function deleteItem(id: string) {
+  await api.delete(`/items/${id}`);
+}
+
+export async function getWardrobeSummary() {
+  const { data } = await api.get('/items/summary');
   return data;
 }
 
