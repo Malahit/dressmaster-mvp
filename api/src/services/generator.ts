@@ -1,7 +1,38 @@
 import type { Item } from '@prisma/client';
+import { getPerplexityOutfitSuggestions } from './perplexity.js';
+
 type Occasion = 'work' | 'date' | 'sport';
 
-export function generateOutfits(items: Item[], occasion: Occasion, temp?: number) {
+/**
+ * Генерирует образы с использованием AI (Perplexity) если доступно,
+ * иначе использует rule-based алгоритм
+ */
+export async function generateOutfits(items: Item[], occasion: Occasion, temp?: number) {
+  // Пробуем получить AI рекомендации
+  const aiSuggestions = await getPerplexityOutfitSuggestions(items, occasion, temp);
+  
+  if (aiSuggestions && aiSuggestions.length > 0) {
+    // Используем AI рекомендации
+    return aiSuggestions.map((suggestion, index) => ({
+      items: {
+        topId: suggestion.topId,
+        bottomId: suggestion.bottomId,
+        shoesId: suggestion.shoesId,
+        accessoryIds: suggestion.accessoryIds || []
+      },
+      score: 100 - index * 5, // AI результаты уже отсортированы
+      reasoning: suggestion.reasoning
+    }));
+  }
+  
+  // Fallback на rule-based генерацию
+  return generateOutfitsRuleBased(items, occasion, temp);
+}
+
+/**
+ * Rule-based генерация образов (оригинальная логика)
+ */
+export function generateOutfitsRuleBased(items: Item[], occasion: Occasion, temp?: number) {
   const tops = items.filter((i) => i.category === 'top');
   const bottoms = items.filter((i) => i.category === 'bottom');
   const shoes = items.filter((i) => i.category === 'shoes');
@@ -25,7 +56,8 @@ export function generateOutfits(items: Item[], occasion: Occasion, temp?: number
       shoesId: c.shoes.id, 
       accessoryIds: c.accessory ? [c.accessory.id] : [] 
     },
-    score: c.score
+    score: c.score,
+    reasoning: undefined // Rule-based не предоставляет объяснения
   }));
 }
 
@@ -46,7 +78,7 @@ function scoreFormality(t: Item, b: Item, s: Item, occasion: Occasion) {
   return Math.max(0, 10 - delta * 3);
 }
 
-function scoreColors(t: Item, b: Item, s: Item) {
+function scoreColors(t: Item, b: Item, _s: Item) {
   // Для офиса: темные низы + нейтральные верха (синий/серый/белый)
   const darkBottoms = ['navy', 'black', 'gray', 'charcoal'];
   const safeTops = ['white', 'lightgray', 'blue', 'lightblue'];

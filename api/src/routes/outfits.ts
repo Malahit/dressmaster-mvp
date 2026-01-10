@@ -12,7 +12,7 @@ export default async function outfitsRoutes(app: FastifyInstance) {
     if (!parsed.success) return reply.code(400).send({ error: 'invalid_body' });
 
     const items = await app.prisma.item.findMany({ where: { userId: req.user.id } });
-    const gen = generateOutfits(items, parsed.data.occasion, parsed.data.temp);
+    const gen = await generateOutfits(items, parsed.data.occasion, parsed.data.temp);
     reply.code(200);
     return gen;
   });
