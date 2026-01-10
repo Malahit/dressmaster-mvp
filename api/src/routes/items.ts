@@ -11,8 +11,65 @@ const itemSchema = z.object({
 
 export default async function itemsRoutes(app: FastifyInstance) {
   app.get('/items', { preHandler: [app.authenticate] }, async (req: any) => {
-    const items = await app.prisma.item.findMany({ where: { userId: req.user.id } });
+    const querySchema = z.object({
+      category: z.enum(['top', 'bottom', 'shoes', 'accessory']).optional(),
+      color: z.string().optional(),
+      season: z.string().optional()
+    });
+    
+    const filters = querySchema.parse(req.query);
+    const where: any = { userId: req.user.id };
+    
+    if (filters.category) where.category = filters.category;
+    if (filters.color) where.color = filters.color;
+    if (filters.season) where.season = filters.season;
+    
+    const items = await app.prisma.item.findMany({ where });
     return items;
+  });
+
+  app.get('/items/summary', { preHandler: [app.authenticate] }, async (req: any) => {
+    const items = await app.prisma.item.findMany({ where: { userId: req.user.id } });
+    
+    const summary = {
+      totalItems: items.length,
+      byCategory: {
+        top: items.filter(i => i.category === 'top').length,
+        bottom: items.filter(i => i.category === 'bottom').length,
+        shoes: items.filter(i => i.category === 'shoes').length,
+        accessory: items.filter(i => i.category === 'accessory').length
+      },
+      bySeason: items.reduce((acc: any, item) => {
+        if (item.season) {
+          acc[item.season] = (acc[item.season] || 0) + 1;
+        }
+        return acc;
+      }, {}),
+      byColor: items.reduce((acc: any, item) => {
+        if (item.color) {
+          acc[item.color] = (acc[item.color] || 0) + 1;
+        }
+        return acc;
+      }, {}),
+      diversity: {
+        categories: Object.keys({
+          top: items.filter(i => i.category === 'top').length,
+          bottom: items.filter(i => i.category === 'bottom').length,
+          shoes: items.filter(i => i.category === 'shoes').length,
+          accessory: items.filter(i => i.category === 'accessory').length
+        }).filter(k => items.filter(i => i.category === k).length > 0).length,
+        seasons: Object.keys(items.reduce((acc: any, item) => {
+          if (item.season) acc[item.season] = true;
+          return acc;
+        }, {})).length,
+        colors: Object.keys(items.reduce((acc: any, item) => {
+          if (item.color) acc[item.color] = true;
+          return acc;
+        }, {})).length
+      }
+    };
+    
+    return summary;
   });
 
   app.post('/items', { preHandler: [app.authenticate] }, async (req: any, reply) => {
