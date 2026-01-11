@@ -14,5 +14,15 @@ jobs:
       - run: corepack enable
       - run: pnpm install --frozen-lockfile
       - run: pnpm prisma:generate
-      - run: pnpm lint
-      - run: pnpm test
+      - name: Lint with ESLint
+        run: pnpm lint
+      - name: Run tests with coverage
+        run: pnpm test -- --coverage --coverage.thresholds.lines=80 --coverage.thresholds.functions=80 --coverage.thresholds.branches=80 --coverage.thresholds.statements=80
+      - name: Deploy to Render
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: |
+          if [ -n "${{ secrets.RENDER_DEPLOY_HOOK_URL }}" ]; then
+            curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
+          else
+            echo "RENDER_DEPLOY_HOOK_URL not set, skipping deployment"
+          fi

@@ -13,5 +13,24 @@ jobs:
           node-version: '20'
       - run: corepack enable
       - run: pnpm install --frozen-lockfile
-      - run: pnpm lint
-      - run: pnpm test || true
+      - name: Lint
+        run: pnpm lint
+      - name: Run tests
+        run: pnpm test || true
+      - name: Setup Expo
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: expo/expo-github-action@v8
+        with:
+          expo-version: latest
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+      - name: Build with EAS (Android)
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push' && secrets.EXPO_TOKEN != ''
+        working-directory: mobile
+        run: |
+          if [ -n "${{ secrets.EXPO_TOKEN }}" ]; then
+            echo "Building Android app with EAS Build"
+            eas build --platform android --non-interactive --no-wait || echo "EAS build not configured, skipping"
+          else
+            echo "EXPO_TOKEN not set, skipping build"
+          fi
