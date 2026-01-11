@@ -30,7 +30,7 @@ jobs:
           node-version: '20'
       - run: corepack enable
       - run: pnpm install --frozen-lockfile
-      - name: Setup Expo
+      - name: Setup Expo (requires EXPO_TOKEN secret and eas.json config)
         uses: expo/expo-github-action@v8
         with:
           expo-version: latest
@@ -38,16 +38,22 @@ jobs:
       - name: Build preview (for non-main branches)
         if: github.ref != 'refs/heads/main'
         run: |
-          if [ -n "${{ secrets.EXPO_TOKEN }}" ]; then
+          if [ -n "${{ secrets.EXPO_TOKEN }}" ] && [ -f "eas.json" ]; then
             eas build --platform all --profile preview --non-interactive
           else
-            echo "EXPO_TOKEN not set, skipping EAS build"
+            echo "EAS build skipped: EXPO_TOKEN secret not set or eas.json not found"
+            echo "To enable EAS builds:"
+            echo "1. Add EXPO_TOKEN secret to repository"
+            echo "2. Create eas.json with preview and production build profiles"
           fi
       - name: Build production (for main branch)
         if: github.ref == 'refs/heads/main'
         run: |
-          if [ -n "${{ secrets.EXPO_TOKEN }}" ]; then
+          if [ -n "${{ secrets.EXPO_TOKEN }}" ] && [ -f "eas.json" ]; then
             eas build --platform all --profile production --non-interactive
           else
-            echo "EXPO_TOKEN not set, skipping EAS build"
+            echo "EAS build skipped: EXPO_TOKEN secret not set or eas.json not found"
+            echo "To enable EAS builds:"
+            echo "1. Add EXPO_TOKEN secret to repository"
+            echo "2. Create eas.json with preview and production build profiles"
           fi
