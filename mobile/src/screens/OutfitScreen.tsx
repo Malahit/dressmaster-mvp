@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView, Image, ActivityIndicator } from 're
 import { api } from '../services/api';
 import Card from '../components/Card';
 
-export default function OutfitScreen({ route, navigation }: any) {
+export default function OutfitScreen({ route }: any) {
   const { id } = route.params || {};
   const [item, setItem] = useState<any>(null);
   const [loading, setLoading] = useState(true);
