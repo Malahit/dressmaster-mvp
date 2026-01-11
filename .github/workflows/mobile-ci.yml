@@ -39,7 +39,7 @@ jobs:
         if: github.ref != 'refs/heads/main'
         run: |
           if [ -n "${{ secrets.EXPO_TOKEN }}" ]; then
-            npx eas-cli build --platform all --profile preview --non-interactive
+            eas build --platform all --profile preview --non-interactive
           else
             echo "EXPO_TOKEN not set, skipping EAS build"
           fi
@@ -47,7 +47,7 @@ jobs:
         if: github.ref == 'refs/heads/main'
         run: |
           if [ -n "${{ secrets.EXPO_TOKEN }}" ]; then
-            npx eas-cli build --platform all --profile production --non-interactive
+            eas build --platform all --profile production --non-interactive
           else
             echo "EXPO_TOKEN not set, skipping EAS build"
           fi

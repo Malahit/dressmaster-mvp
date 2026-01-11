@@ -163,7 +163,7 @@ curl -X GET http://localhost:3000/items \
 {
   "category": "top",
   "color": "blue",
-  "season": "Su",
+  "season": "SS",
   "formality": 3,
   "imageUrl": "https://example.com/image.jpg"
 }
@@ -172,7 +172,7 @@ curl -X GET http://localhost:3000/items \
 **Field Descriptions:**
 - `category` (required): One of `top`, `bottom`, `shoes`, `accessory`
 - `color` (optional): Color of the item
-- `season` (optional): Season code - `S` (Spring), `Su` (Summer), `F` (Fall), `W` (Winter)
+- `season` (optional): Season code - `S` (Spring), `SS` (Summer), `F` (Fall), `W` (Winter)
 - `formality` (optional): Formality level from 1 (casual) to 5 (formal)
 - `imageUrl` (optional): URL to the item's image
 
@@ -182,7 +182,7 @@ curl -X GET http://localhost:3000/items \
   "id": "item_123",
   "category": "top",
   "color": "blue",
-  "season": "Su",
+  "season": "SS",
   "formality": 3,
   "imageUrl": "https://example.com/image.jpg",
   "userId": "user_123",
@@ -202,7 +202,7 @@ curl -X POST http://localhost:3000/items \
   -d '{
     "category": "top",
     "color": "blue",
-    "season": "Su",
+    "season": "SS",
     "formality": 3,
     "imageUrl": "https://example.com/image.jpg"
   }'
@@ -235,7 +235,7 @@ curl -X POST http://localhost:3000/items \
   "id": "item_123",
   "category": "top",
   "color": "red",
-  "season": "Su",
+  "season": "SS",
   "formality": 4,
   "imageUrl": "https://example.com/image.jpg",
   "userId": "user_123",

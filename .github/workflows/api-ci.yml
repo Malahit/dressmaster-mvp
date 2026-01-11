@@ -15,10 +15,8 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm prisma:generate
       - run: pnpm lint
-      - run: pnpm test -- --coverage --coverage.all
-      - name: Check test coverage
-        run: |
-          pnpm vitest run --coverage --coverage.all --coverage.lines=80 --coverage.functions=80 --coverage.branches=80 --coverage.statements=80
+      - name: Run tests with coverage check
+        run: pnpm vitest run --coverage --coverage.all --coverage.lines=80 --coverage.functions=80 --coverage.branches=80 --coverage.statements=80
   
   deploy:
     runs-on: ubuntu-latest
