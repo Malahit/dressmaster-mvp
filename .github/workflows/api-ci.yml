@@ -1,5 +1,9 @@
 name: API CI
 on: [push, pull_request]
+
+permissions:
+  contents: read
+
 jobs:
   api:
     runs-on: ubuntu-latest
@@ -15,4 +19,29 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm prisma:generate
       - run: pnpm lint
-      - run: pnpm test
+      - name: Run tests with coverage check (requires @vitest/coverage-v8)
+        run: |
+          if pnpm list @vitest/coverage-v8 2>&1 | grep -q '@vitest/coverage-v8' || pnpm list @vitest/coverage-c8 2>&1 | grep -q '@vitest/coverage-c8'; then
+            pnpm vitest run --coverage --coverage.all --coverage.lines=80 --coverage.functions=80 --coverage.branches=80 --coverage.statements=80
+          else
+            echo "Coverage provider not installed. Running tests without coverage..."
+            echo "To enable coverage checks, install @vitest/coverage-v8: pnpm add -D @vitest/coverage-v8"
+            pnpm test
+          fi
+  
+  deploy:
+    runs-on: ubuntu-latest
+    needs: api
+    permissions:
+      contents: read
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - name: Deploy to Render
+        env:
+          RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: |
+          if [ -n "$RENDER_DEPLOY_HOOK_URL" ]; then
+            curl -X POST "$RENDER_DEPLOY_HOOK_URL"
+          else
+            echo "RENDER_DEPLOY_HOOK_URL not set, skipping deployment"
+          fi
