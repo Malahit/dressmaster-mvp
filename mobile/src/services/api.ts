@@ -23,9 +23,43 @@ export async function login(email: string, password: string) {
   await SecureStore.setItemAsync('token', data.token);
 }
 
+// Mock images for different clothing types
+const mockImages: Record<string, string[]> = {
+  top: [
+    'https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=400',
+    'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=400',
+    'https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=400'
+  ],
+  bottom: [
+    'https://images.unsplash.com/photo-1542272454315-7fbfabf87084?w=400',
+    'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=400',
+    'https://images.unsplash.com/photo-1473188588951-666fce8e7c68?w=400'
+  ],
+  shoes: [
+    'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400',
+    'https://images.unsplash.com/photo-1460353581641-37baddab0fa2?w=400',
+    'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=400'
+  ],
+  default: [
+    'https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=400',
+    'https://images.unsplash.com/photo-1558769132-cb1aea3c3e75?w=400'
+  ]
+};
+
+function addMockImageIfNeeded(item: any): any {
+  if (!item.imageUrl) {
+    const type = item.type?.toLowerCase() || 'default';
+    const images = mockImages[type] || mockImages.default;
+    const randomIndex = Math.floor(Math.random() * images.length);
+    item.imageUrl = images[randomIndex];
+  }
+  return item;
+}
+
 export async function getItems() {
   const { data } = await api.get('/items');
-  return data;
+  // Add mock images to items that don't have images
+  return Array.isArray(data) ? data.map(addMockImageIfNeeded) : data;
 }
 
 export async function addItem(payload: any) {
